@@ -14,11 +14,13 @@ Requirements
 Installation
 ---------------------
 
-1. Download the files and upload to any location on your server.
-2. Edit the first section of *newvhost* after your needs.
-3. Give the *installer* script execution permission with `chmod +x vhinstaller`
-4. Run the installer with `sudo ./vhinstaller`
-5. Use the now available `sudo newvhost` command to create your first virtual host.
+1. Download the [latest release] (https://github.com/SilverBull/Newvhost/releases/latest) 
+(optionaly you can use `wget --no-check-certificate --content-disposition https://github.com/SilverBull/Newvhost/releases/download/0.02/package.zip`.
+2. Extract the files where you want and navigate inside the folder
+3. Edit the first section of *newvhost* after your needs.
+4. Give the *installer* script execution permission with `chmod +x vhinstaller`
+5. Run the installer with `sudo ./vhinstaller`
+6. Use the now available `sudo newvhost` command to create your first virtual host.
 
 When finished the installation you can safely delete the files you downloaded.
 
