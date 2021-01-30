@@ -15,7 +15,7 @@ Installation
 ---------------------
 
 1. Download the [latest release] (https://github.com/SilverBull/Newvhost/releases/latest) 
-(optionaly you can use `wget --no-check-certificate --content-disposition https://github.com/SilverBull/Newvhost/releases/download/0.02/package.zip`.
+(optionaly you can use `wget --no-check-certificate --content-disposition https://github.com/SilverBull/Newvhost/releases/latest/download/package.zip`.
 2. Extract the files where you want and navigate inside the folder
 3. Edit the first section of *newvhost* after your needs.
 4. Give the *installer* script execution permission with `chmod +x vhinstaller`
