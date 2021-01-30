@@ -21,6 +21,9 @@ tLOCATION="/var/www/html"
 # Do not include a traling slash
 tLOCATIONSAFE="\/var\/www/html"
 
+# If left empty, the script will use root as account for MySQL
+tDBU=""
+
 # If left empty, the script will ask for MySQL root account password
 tDBPW=""
 
@@ -40,7 +43,7 @@ tVHOSTDIR=""
 tVHOSTCONFIG=""
 tDBUSER=""
 tDIR="/usr/local/newvhost"
-tGENPASSWD=32
+tGENPASSWD=12
 tGENPW=""
 
 # Get proper paths to binaries used
@@ -119,6 +122,18 @@ function set_vhost() {
 #
 function get_rootpw() {
 
+	if [ -z "$tDBU" ]; then
+
+		echo
+		read -r -s -p "Database admin's user ? " _mydbu_
+
+		if [ -z "$_mydbu_" ]; then
+			tDBU=root
+		else
+			tDBU=$_mydbu_
+		fi
+
+	fi
 	if [ -z "$tDBPW" ]; then
 
 		echo
@@ -143,27 +158,28 @@ function get_rootpw() {
 function create_vhost() {
 
 	tVHOSTLOG="$tVHOSTDIR/log/"
+	tVHOSTDIRLOCATION="$tLOCATION/$tVHOSTDIR"
 
 	echo
 	echo
 	echo -n "Creating new virtual host for domain $tVHOST... "
 
 	# Check if the dir for the new vhost already exists
-	if [ -d "$tVHOSTDIR" ]; then
-		echo "$tVHOSTDIR already exists, aborting."
+	if [ -d "$tVHOSTDIRLOCATION" ]; then
+		echo "$tVHOSTDIRLOCATION already exists, aborting."
 		exit 1
 	fi
 
 	# Create the new dir for the vhost
-	$tMKDIR -p ${tVHOSTDIR}/{log}
+	$tMKDIR -p ${tVHOSTDIRLOCATION}/
 	# $tMKDIR -p $tVHOSTDIR
 	# $tMKDIR -p $tVHOSTLOG
 
 	# Copy the index.html template to the new vhost-dir
-	$tCP $tDIR/index.template $tVHOSTDIR/index.html
+	$tCP $tDIR/index.template $tVHOSTDIRLOCATION/index.html
 
 	# Set the proper web server permissions
-	$tCHOWN -R $tSERVERUSER:$tSERVERUSER $tVHOSTDIR
+	$tCHOWN -R $tSERVERUSER:$tSERVERUSER $tVHOSTDIRLOCATION
 
 	# Put vhost config-file into place
 	tVHOSTCONFIG="/etc/apache2/sites-available/${tVHOST}.conf"
@@ -174,17 +190,29 @@ function create_vhost() {
 		exit 1
 	fi
 
-	# Create temporary apache config file
-	$tSED -e "s/CHANGEMEVHOST/${tVHOST}/g" $tDIR/vhost.template >$tDIR/vhost.template1
-	$tSED -e "s/CHANGEMEVDIR/${tVHOSTDIR}/g" $tDIR/vhost.template >$tDIR/vhost.template1
-	$tSED -e "s/CHANGEMEHOME/${tLOCATIONSAFE}/g" $tDIR/vhost.template1 >$tDIR/${tVHOST}.conf
-
-	# Copy apache config file to /etc/apache2/site-available
-	$tCP $tDIR/${tVHOST}.conf $tVHOSTCONFIG
-
-	# Remove temporary config file
-	$tRM $tDIR/vhost.template1
-	$tRM $tDIR/${tVHOST}.conf
+	# Create apache config file to /etc/apache2/site-available
+	if ! echo "
+		<VirtualHost *:80>
+			ServerName $tVHOST
+			ServerAlias www.$tVHOST
+			DocumentRoot $tVHOSTDIRLOCATION
+			<Directory />
+				AllowOverride All
+			</Directory>
+			<Directory $tVHOSTDIRLOCATION>
+				Options Indexes FollowSymLinks MultiViews
+				AllowOverride all
+				Require all granted
+			</Directory>
+			ErrorLog /var/log/apache2/$tVHOST-error.log
+			LogLevel error
+			CustomLog /var/log/apache2/$tVHOST-access.log combined
+		</VirtualHost>" >$tVHOSTCONFIG; then
+		echo -e $"There is an ERROR creating $domain file"
+		exit
+	else
+		echo -e $"\nNew Virtual Host Created\n"
+	fi
 
 	printf "Done\n"
 
@@ -248,7 +276,7 @@ function create_db() {
 	echo
 	echo "-----------------------------------------------------------------------------"
 	echo
-	read -r -p "Database usernname ? " _dbuser_
+	read -r -p "Database username ? " _dbuser_
 
 	if [ -z "$_dbuser_" ]; then
 
@@ -279,7 +307,7 @@ function create_db() {
 		$tSED -e "s/CHANGEMEPW/$tGENPW/g" $tDIR/mysql.template.2 >$tDIR/mysql.template.3
 
 		# Create database table and user
-		$tMYSQL --user=root --password=$tDBPW <$tDIR/mysql.template.3
+		$tMYSQL --user=$tDBU --password=$tDBPW <$tDIR/mysql.template.3
 
 		# Delete temporary config files
 		$tRM $tDIR/mysql.template.1
@@ -315,7 +343,7 @@ function finished() {
 		echo "Database tablename: $tDBUSER"
 		echo "Database password: $tGENPW"
 		echo
-		echo $tGENPW >/root/$tDBUSER_dbpass.txt
+		echo $tGENPW >/root/{$tDBUSER}_dbpass.txt
 	fi
 
 	echo
