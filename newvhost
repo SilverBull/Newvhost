@@ -11,15 +11,15 @@
 #-----------------------------------------------
 
 # User to user for permissions
-tSERVERUSER="root"
+tSERVERUSER="www-data"
 
 # Location to host all virtual hosts (recommended is the home folder of the user specified above)
 # Do not include a traling slash
-tLOCATION="/var/www"
+tLOCATION="/var/www/html"
 
 # Safe ocation path, must be same as tLOCATION!
 # Do not include a traling slash
-tLOCATIONSAFE="\/var\/www"
+tLOCATIONSAFE="\/var\/www/html"
 
 # If left empty, the script will ask for MySQL root account password
 tDBPW=""
@@ -312,7 +312,7 @@ function finished() {
         echo "Database tablename: $tDBUSER"
         echo "Database password: $tGENPW"
         echo
-        echo "Please save the database password in a secure place, this is the only time you will see it!"
+        echo $tGENPW > /root/$tDBUSER_dbpass.txt
     fi
 
     echo
