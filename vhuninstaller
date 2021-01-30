@@ -5,11 +5,10 @@
 # usage             : No parameters. Just invoke script-name.
 #==============================================================================
 
-
 # Check so root is running the script
 if [ "$(id -u)" != "0" ]; then
-    echo "This script must be run as root" 1>&2
-    exit 1
+	echo "This script must be run as root" 1>&2
+	exit 1
 fi
 
 # Set up variables and strings
@@ -28,15 +27,14 @@ tRM=$(which rm)
 #
 function uninstaller() {
 
-    $tRM -rf $tLOCAL
-    $tRM $tBIN
+	$tRM -rf $tLOCAL
+	$tRM $tBIN
 
-    echo
-    echo "Uninstallation complete!"
-    echo
+	echo
+	echo "Uninstallation complete!"
+	echo
 
 }
-
 
 #
 # Main

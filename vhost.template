@@ -5,12 +5,12 @@
 #
 
 <VirtualHost *:80>
-	DocumentRoot "CHANGEMEHOME/CHANGEMEVHOST/public"
+	DocumentRoot "CHANGEMEHOME/CHANGEMEVDIR/"
 	ServerName  CHANGEMEVHOST
 	ServerAlias www.CHANGEMEVHOST
 
     # Directory settings
-    <Directory "CHANGEMEHOME/CHANGEMEVHOST/public">
+    <Directory "CHANGEMEHOME/CHANGEMEVDIR/">
         Options -Indexes
         AllowOverride all
         Require all granted

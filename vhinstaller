@@ -7,14 +7,14 @@
 
 # Check so root is running the script
 if [ "$(id -u)" != "0" ]; then
-    echo "This script must be run as root" 1>&2
-    exit 1
+	echo "This script must be run as root" 1>&2
+	exit 1
 fi
 
 # Set up variables and strings
 tLOCAL="/usr/local/newvhost"
 tBIN="/usr/bin/newvhost"
-tINSTALL=`pwd`
+tINSTALL=$(pwd)
 
 # Get proper paths to binaries used
 tCHOWN=$(which chown)
@@ -22,7 +22,6 @@ tMKDIR=$(which mkdir)
 tCHMOD=$(which chmod)
 tCP=$(which cp)
 tLN=$(which ln)
-
 
 #-----------------------------------------------
 # Functions
@@ -47,7 +46,6 @@ function installer() {
 	echo
 
 }
-
 
 #
 # Main
